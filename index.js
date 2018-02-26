@@ -1,3 +1,5 @@
+'use strict'
+
 const https = require('https')
     , fs = require('fs')
     , URL = require('url')
