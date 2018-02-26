@@ -39,7 +39,10 @@ function download(url, dest, progress) {
           file.write(chunk)
         })
 
-        res.on('end', resolve)
+        res.on('end', () => {
+          file.end()
+          resolve()
+        })
       })
 
       req.on('error', reject)
