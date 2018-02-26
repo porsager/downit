@@ -1,6 +1,6 @@
 {
   "name": "downit",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Resumeable downloader",
   "main": "index.js",
   "keywords": ["resumeable", "download", "get", "fetch", "resume", "continue", "wget"],
