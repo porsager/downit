@@ -10,13 +10,16 @@ npm i downit
 
 # Usage
 
-### `downit(url, dest, [progress])``
+### `downit(url, dest, [options])``
 
 ```js
 const downit = require('downit')
 
-downit(url, dest, (downloaded, total) => {
-  console.log('Got', downloaded, 'bytes of ', total, 'bytes')
+downit(url, dest, {
+  headers: { Authorization: 'Bearer Of Good News' },
+  progress: (got, total) => console.log('Got', got, 'B of ', total, 'B'),
+  onrequest: req => { /* The node request instance */ },
+  onresponse: req => { /* The node response instance */ }
 }).then(() => {
   console.log('Downed it')
 }).catch(e => {

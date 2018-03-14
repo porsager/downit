@@ -1,10 +1,14 @@
 'use strict'
 
-const https = require('https')
-    , fs = require('fs')
+const fs = require('fs')
     , URL = require('url')
 
-function download(url, dest, progress) {
+function download(url, dest, options) {
+  options = options || {}
+  url = URL.parse(url)
+
+  const progress = options.progress || options
+
   return new Promise((resolve, reject) => {
     fs.stat(dest, (err, stat) => {
       if (err && err.code !== 'ENOENT')
@@ -12,10 +16,18 @@ function download(url, dest, progress) {
 
       let start = stat ? stat.size : 0
 
-      const req = https.request(Object.assign({
-        method: 'GET',
-        headers: { Range: 'bytes=' + start + '-' }
-      }, URL.parse(url)), res => {
+      const req = require(url.protocol.slice(0, -1)).request(Object.assign({
+        method: options.method || 'GET',
+        headers: Object.assign({ Range: 'bytes=' + start + '-' }, options.headers)
+      }, url), res => {
+        if (res.headers.location)
+          return resolve(download(res.headers.location, dest, options))
+
+        if (res.statusCode >= 400)
+          return reject(new Error('InvalidStatusCode:' + res.statusCode))
+
+        options.onresponse && options.onresponse(res)
+
         if (!res.headers['content-range'])
           start = 0
 
@@ -45,9 +57,12 @@ function download(url, dest, progress) {
         })
       })
 
+      options.onrequest && options.onrequest(req)
+
       req.on('error', reject)
       req.on('close', reject)
-      req.on('timeout', () => { req.abort() })
+      req.on('timeout', () => (req.abort(), reject(new Error('Timeout'))))
+      req.on('abort', () => reject(new Error('Aborted')))
       req.setTimeout(30 * 1000)
       req.end()
     })
