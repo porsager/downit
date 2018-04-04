@@ -5,9 +5,8 @@ const fs = require('fs')
 
 function download(url, dest, options) {
   options = options || {}
-  url = URL.parse(url)
-
   const progress = options.progress || options
+      , parsedUrl = URL.parse(url)
 
   return new Promise((resolve, reject) => {
     fs.stat(dest, (err, stat) => {
@@ -16,17 +15,20 @@ function download(url, dest, options) {
 
       let start = (stat && stat.size) ? stat.size - 1 : 0
 
-      const req = require(url.protocol.slice(0, -1)).request(Object.assign({
+      const req = require(parsedUrl.protocol.slice(0, -1)).request(Object.assign({
         method: options.method || 'GET',
         headers: Object.assign({ Range: 'bytes=' + start + '-' }, options.headers)
-      }, url), res => {
-        if (res.headers.location)
-          return resolve(download(res.headers.location, dest, options))
+      }, parsedUrl), res => {
+        options.onresponse && options.onresponse(res)
+
+        if (res.statusCode === 416 && res.headers['content-range'] && res.headers['content-range'].slice(-2) !== '/0')
+          return fs.unlink(dest, () => resolve(download(url, dest, options)))
 
         if (res.statusCode >= 400)
           return reject(new Error('InvalidStatusCode:' + res.statusCode))
 
-        options.onresponse && options.onresponse(res)
+        if (res.headers.location)
+          return resolve(download(res.headers.location, dest, options))
 
         if (!res.headers['content-range'])
           start = 0
