@@ -14,7 +14,7 @@ function download(url, dest, options) {
       if (err && err.code !== 'ENOENT')
         return reject(err)
 
-      let start = stat ? stat.size : 0
+      let start = (stat && stat.size) ? stat.size - 1 : 0
 
       const req = require(url.protocol.slice(0, -1)).request(Object.assign({
         method: options.method || 'GET',

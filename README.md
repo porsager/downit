@@ -10,7 +10,7 @@ npm i downit
 
 # Usage
 
-### `downit(url, dest, [options])``
+### `downit(url, dest, [options])`
 
 ```js
 const downit = require('downit')
