@@ -62,7 +62,6 @@ function download(url, dest, options) {
       options.onrequest && options.onrequest(req)
 
       req.on('error', reject)
-      req.on('close', reject)
       req.on('timeout', () => (req.abort(), reject(new Error('Timeout'))))
       req.on('abort', () => reject(new Error('Aborted')))
       req.setTimeout(30 * 1000)
