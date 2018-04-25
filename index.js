@@ -53,10 +53,12 @@ function download(url, dest, options) {
           file.write(chunk)
         })
 
-        res.on('end', () => {
-          file.end()
-          resolve()
-        })
+        res.on('end', () => file.end())
+        file.on('finish', () =>
+          res.complete
+            ? resolve()
+            : reject(new Error('IncompleteResponse'))
+        )
       })
 
       options.onrequest && options.onrequest(req)
