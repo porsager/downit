@@ -57,7 +57,7 @@ function download(url, dest, options) {
         file.on('finish', () =>
           res.complete
             ? resolve()
-            : reject(new Error('IncompleteResponse'))
+            : download(url, dest, options)
         )
       })
 
