@@ -66,7 +66,6 @@ function download(url, dest, options) {
       req.on('error', reject)
       req.on('timeout', () => (req.abort(), reject(new Error('Timeout'))))
       req.on('abort', () => reject(new Error('Aborted')))
-      req.setTimeout(30 * 1000)
       req.end()
     })
   })
