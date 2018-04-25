@@ -39,8 +39,8 @@ function download(url, dest, options) {
         })
 
         file.on('error', e => {
-          req.abort()
           reject(e)
+          req.abort()
         })
 
         const length = parseInt(res.headers['content-length'], 10)
