@@ -17,12 +17,27 @@ const downit = require('downit')
 
 downit(url, dest, {
   headers: { Authorization: 'Bearer Of Good News' },
-  progress: (got, total) => console.log('Got', got, 'B of ', total, 'B'),
+  progress: (got, total) => console.log('Got ', got, 'B of ', total, 'B'),
   onrequest: req => { /* The node request instance */ },
-  onresponse: req => { /* The node response instance */ }
+  onresponse: res => { /* The node response instance */ }
 }).then(() => {
   console.log('Downed it')
 }).catch(e => {
-  console.error('Dropped it')
+  console.error('Dropped it, due to ', e)
 })
+```
+
+### CLI
+
+Downit also works on the command line.
+
+#### Installation
+```
+npm i downit -g
+```
+
+#### Usage
+
+```
+downit url [dest]
 ```

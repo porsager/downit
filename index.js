@@ -10,7 +10,12 @@ function download(url, dest, options) {
   const progress = options.progress || options
       , parsedUrl = URL.parse(url)
 
-  return new Promise((resolve, reject) => {
+  return new Promise((res, rej) => {
+    let pending = true
+
+    const resolve = (r) => (pending = false, res(r))
+        , reject = (e) => (pending = false, rej(e))
+
     fs.stat(dest, (err, stat) => {
       if (err && err.code !== 'ENOENT')
         return reject(err)
@@ -24,13 +29,13 @@ function download(url, dest, options) {
         options.onresponse && options.onresponse(res)
 
         if (res.statusCode === 416 && res.headers['content-range'] && res.headers['content-range'].slice(-2) !== '/0')
-          return fs.unlink(dest, () => resolve(download(url, dest, options)))
+          return fs.unlink(dest, () => resolve(pending && download(url, dest, options)))
 
         if (res.statusCode >= 400)
           return reject(new Error('InvalidStatusCode:' + res.statusCode))
 
         if (res.headers.location)
-          return resolve(download(res.headers.location, dest, options))
+          return resolve(pending && download(res.headers.location, dest, options))
 
         if (!res.headers['content-range'])
           start = 0
@@ -56,11 +61,9 @@ function download(url, dest, options) {
         })
 
         res.on('end', () => file.end())
-        file.on('finish', () =>
-          res.complete
-            ? resolve()
-            : download(url, dest, options)
-        )
+        file.on('finish', () => {
+          resolve(!res.complete && pending && download(url, dest, options))
+        })
       })
 
       options.onrequest && options.onrequest(req)
