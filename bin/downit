@@ -1,0 +1,21 @@
+#! /usr/bin/env node
+
+const downit = require('../index.js')
+
+downit(process.argv[2], process.argv[3], {
+  progress: (progress, size) => {
+    const percent = Math.floor(progress / size * 100)
+        , pad = Array.from(Array(5 - String(percent).length)).join(' ')
+
+    process.stdout.clearLine()
+    process.stdout.cursorTo(0)
+    process.stdout.write(pad + percent + '% - ' + progress + 'B / ' + size + 'B')
+  }
+})
+.then(r => {
+  process.stdout.write('\n')
+})
+.catch(err => {
+  process.stdout.write('\n')
+  console.error(err)
+})
