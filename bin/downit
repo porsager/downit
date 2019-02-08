@@ -5,11 +5,11 @@ const downit = require('../index.js')
 downit(process.argv[2], process.argv[3], {
   progress: (progress, size) => {
     const percent = Math.floor(progress / size * 100)
-        , pad = Array.from(Array(5 - String(percent).length)).join(' ')
+        , pad = Array.from(Array(Math.max(0, 5 - String(percent).length))).join(' ')
 
     process.stdout.clearLine()
     process.stdout.cursorTo(0)
-    process.stdout.write(pad + percent + '% - ' + progress + 'B / ' + size + 'B')
+    process.stdout.write(pad + percent + '% - ' + bytes(progress) + ' / ' + bytes(size))
   }
 })
 .then(r => {
@@ -19,3 +19,18 @@ downit(process.argv[2], process.argv[3], {
   process.stdout.write('\n')
   console.error(err)
 })
+
+const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+function bytes(bytes) {
+  const divider = 1000
+  if (Math.abs(bytes) < divider)
+    return bytes + ' B'
+
+  let u = -1
+  do {
+    bytes /= divider
+    ++u
+  } while (Math.abs(bytes) >= divider && u < units.length - 1)
+
+  return bytes.toFixed(1) + ' ' + units[u]
+}
