@@ -50,13 +50,15 @@ function download(url, dest, options) {
           req.abort()
         })
 
-        const length = parseInt(res.headers['content-length'], 10)
+        const length = res.headers['content-length']
+          ? parseInt(res.headers['content-length'], 10)
+          : 0
 
         let downloaded = start
 
         res.on('data', chunk => {
           downloaded += chunk.length
-          typeof progress === 'function' && progress(downloaded, (length + start))
+          typeof progress === 'function' && progress(downloaded, Math.max(downloaded, (length + start)))
           file.write(chunk)
         })
 
