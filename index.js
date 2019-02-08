@@ -2,6 +2,8 @@
 
 const fs = require('fs')
     , URL = require('url')
+    , http = require('http')
+    , https = require('https')
 
 function download(url, dest, options) {
   options = options || {}
@@ -15,7 +17,7 @@ function download(url, dest, options) {
 
       let start = (stat && stat.size) ? stat.size - 1 : 0
 
-      const req = require(parsedUrl.protocol.slice(0, -1)).request(Object.assign({
+      const req = (parsedUrl.protocol === 'https:' ? https : http).request(Object.assign({
         method: options.method || 'GET',
         headers: Object.assign({ Range: 'bytes=' + start + '-' }, options.headers)
       }, parsedUrl), res => {
