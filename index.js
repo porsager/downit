@@ -7,8 +7,7 @@ const fs = require('fs')
 
 function download(url, dest, options) {
   options = options || {}
-  const progress = options.progress || options
-      , parsedUrl = URL.parse(url)
+  const parsedUrl = URL.parse(url)
 
   return new Promise((res, rej) => {
     let pending = true
@@ -56,16 +55,25 @@ function download(url, dest, options) {
 
         let downloaded = start
 
+        emitProgress()
         res.on('data', chunk => {
           downloaded += chunk.length
-          typeof progress === 'function' && progress(downloaded, Math.max(downloaded, (length + start)))
+          emitProgress()
           file.write(chunk)
         })
 
         res.on('end', () => file.end())
         file.on('finish', () => {
-          resolve(!res.complete && pending && download(url, dest, options))
+          if (!res.complete && pending)
+            return resolve(download(url, dest, options))
+
+          emitProgress()
+          resolve(dest)
         })
+
+        function emitProgress() {
+          typeof options.onprogress === 'function' && options.onprogress(downloaded, Math.max(downloaded, (length + start)))
+        }
       })
 
       options.onrequest && options.onrequest(req)

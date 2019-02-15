@@ -1,11 +1,19 @@
 #! /usr/bin/env node
 
 const downit = require('../index.js')
+    , path = require('path')
 
 downit(process.argv[2], process.argv[3], {
   progress: (progress, size) => {
+let last = null
+
+  onprogress: (progress, size) => {
+    if (progress !== size && last && last > Date.now() - 33)
+      return
+
+    last = Date.now()
     const percent = (progress / size * 100).toFixed(2)
-        , pad = Array.from(Array(Math.max(0, 6 - String(percent).length))).join(' ')
+        , pad = Array.from(Array(Math.max(0, 7 - String(percent).length))).join(' ')
 
     process.stdout.clearLine()
     process.stdout.cursorTo(0)
