@@ -4,8 +4,8 @@ const downit = require('../index.js')
 
 downit(process.argv[2], process.argv[3], {
   progress: (progress, size) => {
-    const percent = Math.floor(progress / size * 100)
-        , pad = Array.from(Array(Math.max(0, 5 - String(percent).length))).join(' ')
+    const percent = (progress / size * 100).toFixed(2)
+        , pad = Array.from(Array(Math.max(0, 6 - String(percent).length))).join(' ')
 
     process.stdout.clearLine()
     process.stdout.cursorTo(0)
