@@ -3,10 +3,9 @@
 const downit = require('../index.js')
     , path = require('path')
 
-downit(process.argv[2], process.argv[3], {
-  progress: (progress, size) => {
 let last = null
 
+downit(process.argv[2], process.argv[3] || path.basename(process.argv[2]), {
   onprogress: (progress, size) => {
     if (progress !== size && last && last > Date.now() - 33)
       return
