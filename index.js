@@ -27,7 +27,7 @@ function download(url, dest, options) {
       }, parsedUrl), res => {
         options.onresponse && options.onresponse(res)
 
-        if (res.statusCode === 416 && res.headers['content-range'] && res.headers['content-range'].slice(-2) !== '/0')
+        if (res.statusCode === 416)
           return fs.unlink(dest, () => resolve(pending && download(url, dest, options)))
 
         if (res.statusCode >= 400)
