@@ -21,10 +21,12 @@ function download(url, dest, options) {
 
       let start = (stat && stat.size) ? stat.size - 1 : 0
 
-      const req = (parsedUrl.protocol === 'https:' ? https : http).request(Object.assign({
-        method: options.method || 'GET',
-        headers: Object.assign({ Range: 'bytes=' + start + '-' }, options.headers)
-      }, parsedUrl), res => {
+      const req = (parsedUrl.protocol === 'https:' ? https : http).request(Object.assign(
+        { method: 'GET' },
+        parsedUrl,
+        options,
+        { headers: Object.assign({ Range: 'bytes=' + start + '-' }, options.headers) }
+      ), res => {
         options.onresponse && options.onresponse(res)
 
         if (res.statusCode === 416)
