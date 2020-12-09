@@ -17,5 +17,8 @@
   "license": "WTFPL",
   "bin": {
     "downit": "bin/downit"
-  }
+  },
+  "files": [
+    "index.js"
+  ]
 }
