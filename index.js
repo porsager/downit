@@ -8,6 +8,7 @@ const fs = require('fs')
 function download(url, dest, options) {
   options = options || {}
   const parsedUrl = URL.parse(url)
+      , resume = options.resume !== false
 
   return new Promise((res, rej) => {
     let pending = true
@@ -19,7 +20,7 @@ function download(url, dest, options) {
       if (err && err.code !== 'ENOENT')
         return reject(err)
 
-      let start = (stat && stat.size) ? stat.size - 1 : 0
+      let start = (resume && stat && stat.size) ? stat.size - 1 : 0
 
       const req = (parsedUrl.protocol === 'https:' ? https : http).request(Object.assign(
         { method: 'GET' },
