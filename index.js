@@ -52,6 +52,8 @@ function download(url, dest, options) {
           req.abort()
         })
 
+        file.on('drain', () => res.resume())
+
         const length = res.headers['content-length']
           ? parseInt(res.headers['content-length'], 10)
           : 0
@@ -62,7 +64,7 @@ function download(url, dest, options) {
         res.on('data', chunk => {
           downloaded += chunk.length
           emitProgress()
-          file.write(chunk)
+          !file.write(chunk) && res.pause()
         })
 
         res.on('end', () => file.end())
