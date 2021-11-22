@@ -21,6 +21,7 @@ function download(url, dest, options) {
         return reject(err)
 
       let start = (resume && stat && stat.size) ? stat.size - 1 : 0
+        , error
 
       const req = (parsedUrl.protocol === 'https:' ? https : http).request(Object.assign(
         { method: 'GET' },
@@ -44,11 +45,13 @@ function download(url, dest, options) {
 
         const file = fs.createWriteStream(dest, {
           flags: start ? 'r+' : 'w',
+          autoClose: true,
+          emitClose: true,
           start
         })
 
         file.on('error', e => {
-          reject(e)
+          error = e
           req.abort()
         })
 
@@ -68,7 +71,10 @@ function download(url, dest, options) {
         })
 
         res.on('end', () => file.end())
-        file.on('finish', () => {
+        file.on('close', () => {
+          if (error)
+            return reject(error)
+
           if (!res.complete && pending)
             return resolve(download(url, dest, options))
 
