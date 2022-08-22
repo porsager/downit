@@ -1,4 +1,4 @@
-# Downit - Resume downloads in node
+# 🎢 Downit - Resume downloads in node
 
 Downit simply downloads a file from a URL to a destination on the disk, resuming previous progress if the server supports the `Range` header.
 
