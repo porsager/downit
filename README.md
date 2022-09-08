@@ -17,7 +17,7 @@ const downit = require('downit')
 
 downit(url, dest, {
   headers: { Authorization: 'Bearer Of Good News' },
-  progress: (got, total) => console.log('Got ', got, 'B of ', total, 'B'),
+  onprogress: (got, total) => console.log('Got ', got, 'B of ', total, 'B'),
   onrequest: req => { /* The node request instance */ },
   onresponse: res => { /* The node response instance */ }
 }).then(() => {
