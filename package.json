@@ -12,6 +12,9 @@
     "continue",
     "wget"
   ],
+  "scripts": {
+    "test": "echo some day"
+  },
   "author": "Rasmus Porsager <rasmus@porsager.com>",
   "repository": "porsager/downit",
   "license": "WTFPL",
